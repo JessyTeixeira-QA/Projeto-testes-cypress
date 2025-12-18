@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - testes
+
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
@@ -11,12 +12,20 @@ jobs:
       matrix:
         containers: [1, 2]
     steps:
-      - name: Checkout
+      - name: Checkout FrontEnd (Raiz)
         uses: actions/checkout@v4      
-      - name: Checkout
+
+      - name: Checkout BackEnd (Subpasta)
         uses: actions/checkout@v4
         with: 
           path: server      
+
+      - name: Install Lint Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run ESLint (Análise Estática)
+        run: npm run lint
+
       - name: Start Server BackEnd
         run: |
           cd server
@@ -28,11 +37,13 @@ jobs:
           done
           echo "Server is running successfully."
         working-directory: server
+
       - name: Start Web App FrontEnd
         run: |
           cd web
           npm install
           npm start &        
+
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
         with:
@@ -47,4 +58,3 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#Sempre verifique a indentação do seu arquivo yaml
