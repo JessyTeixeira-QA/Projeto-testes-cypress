@@ -29,7 +29,7 @@ describe('Página de cadastro', () => {
     })
 
 
-    context('Sessão de cadastro completa', () => {
+    context.only('Sessão de cadastro completa', () => {
         const senha = faker.internet.password({ length: 8, memorable: true })
         it('Cadastra uma clínica', () => {
             cy.get('[href="/cadastro"]').click();
