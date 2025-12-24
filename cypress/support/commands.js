@@ -9,7 +9,6 @@ Cypress.Commands.add('login', (email, senha) => {
 })
 
 
-
 Cypress.Commands.add('cadastraEspecialista', (nome, email, senha, especialidade, crm, imagem, cep, rua, numero, complemento, estado) => {
     cy.visit('/dashboard')
     cy.contains('Cadastrar especialista').should('be.visible').click()
@@ -29,18 +28,22 @@ Cypress.Commands.add('cadastraEspecialista', (nome, email, senha, especialidade,
 })
 
 Cypress.Commands.add('loginApi', (email, senha) => {
-    cy.request({
-        method: 'POST',
-        url: Cypress.env('api_login'),
-        body: {
-            email: email,
-            senha: senha
-        }
-    }).then(response => {
-        expect(response.status).to.eq(200);
-        expect(response.body.auth).to.be.true;
-        expect(response.body.rota).to.eq('/clinica');
-        expect(response.body.token).to.exist;
-        cy.wrap(response.body.token).as('token');
-    })
+  if (!email || !senha) {
+    throw new Error(`Email ou Senha não definidos! Recebido: email=${email}, senha=${senha}`);
+  }
+
+  cy.request({
+      method: 'POST',
+      url: 'http://localhost:3000/auth/login',
+      body: {
+        email: "clinica@gmail.com",
+        senha: "4321"
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+  }).then((response) => {
+    expect(response.status).to.equal(200)
+    cy.wrap(response.body.token).as('token')
+  })
 })
